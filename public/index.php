@@ -2,6 +2,7 @@
 
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
+use Illuminate\App\Middleware\AdminMiddleware;
 
 define('LARAVEL_START', microtime(true));
 
