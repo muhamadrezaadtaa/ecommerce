@@ -18,7 +18,7 @@
             </li>
             <li class="sidebar-item">
               <a class="sidebar-link" href="dashboard" aria-expanded="false">
-                <i class="ti ti-atom"></i>
+                <i class="ti ti-chart-line"></i>
                 <span class="hide-menu">Dashboard</span>
               </a>
             </li>
@@ -27,13 +27,13 @@
             <!-- ---------------------------------- -->
              <li class="sidebar-item">
               <a class="sidebar-link" href="categories" aria-expanded="false">
-                <i class="ti ti-atom"></i>
+                <i class="ti ti-tags"></i>
                 <span class="hide-menu">Categories</span>
               </a>
             </li>
             <li class="sidebar-item">
               <a class="sidebar-link" href="products" aria-expanded="false">
-                <i class="ti ti-atom"></i>
+                <i class="ti ti-box"></i>
                 <span class="hide-menu">Products</span>
               </a>
             </li>

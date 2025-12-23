@@ -7,6 +7,7 @@
   <title>Modernize Free Bootstrap Admin Template by Adminmart</title>
   <link rel="shortcut icon" type="image/png" href="../assets/images/logos/favicon.png" />
   <link rel="stylesheet" href="{{asset('assets/css/styles.min.css')}}" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 </head>
 
 <body>
