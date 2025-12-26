@@ -114,3 +114,4 @@ Route::controller(GoogleController::class)->group(function () {
 });
 
 Route::get('/catalog', [CatalogController::class, 'index'])->name('catalog.index');
+
