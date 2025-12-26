@@ -16,6 +16,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WishlistController;
+use App\Http\Controllers\PaymentController;
 
 // ================================================
 // HALAMAN PUBLIK (Tanpa Login)
@@ -115,3 +116,18 @@ Route::controller(GoogleController::class)->group(function () {
 
 Route::get('/catalog', [CatalogController::class, 'index'])->name('catalog.index');
 
+// routes/web.php
+
+
+
+Route::middleware('auth')->group(function () {
+    // ... routes lainnya
+
+    // Payment Routes
+    Route::get('/orders/{order}/pay', [PaymentController::class, 'show'])
+        ->name('orders.pay');
+    Route::get('/orders/{order}/success', [PaymentController::class, 'success'])
+        ->name('orders.success');
+    Route::get('/orders/{order}/pending', [PaymentController::class, 'pending'])
+        ->name('orders.pending');
+});
