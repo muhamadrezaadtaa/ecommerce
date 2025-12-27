@@ -19,4 +19,17 @@ class OrderController extends Controller
 
         return view('orders.show', compact('order', 'snapToken'));
     }
+    // app/Http/Controllers/OrderController.php (atau PaymentController.php)
+
+    public function success(Order $order)
+    {
+        // Optional: cek status terbaru dari Midtrans kalau mau lebih aman
+        // Tapi cukup tampilkan pesan sukses aja untuk UX
+        return view('orders.success', compact('order'));
+    }
+
+    public function pending(Order $order)
+    {
+        return view('orders.pending', compact('order'));
+    }
 }

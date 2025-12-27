@@ -17,6 +17,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\MidtransNotificationController;
 
 // ================================================
 // HALAMAN PUBLIK (Tanpa Login)
@@ -131,3 +132,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders/{order}/pending', [PaymentController::class, 'pending'])
         ->name('orders.pending');
 });
+
+Route::get('/orders/{order}/success', [OrderController::class, 'success'])->name('orders.success');
+Route::get('/orders/{order}/pending', [OrderController::class, 'pending'])->name('orders.pending');
+
+// routes/web.php
+Route::post('/midtrans/notification', [PaymentController::class, 'notification'])->name('midtrans.notification');
+
+Route::post('midtrans/notification', [MidtransNotificationController::class, 'handle'])
+    ->name('midtrans.notification');

@@ -33,6 +33,7 @@ return new class extends Migration
             $table->index('order_number');
             $table->index('status');
             $table->index('created_at');
+            $table->string('midtrans_order_id')->nullable()->unique();
         });
     }
 

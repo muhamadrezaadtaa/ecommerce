@@ -43,8 +43,14 @@ class MidtransService
         // 1. Transaction Details (WAJIB)
         // 'gross_amount' HARUS integer (Rupiah tidak ada sen di Midtrans).
         // Jangan kirim float/string pecahan!
+        // Buat Midtrans Order ID yang unik (tapi tetap traceable ke order kamu)
+        $midtransOrderId = $order->order_number . '-' . time(); 
+        // Atau lebih random: $order->order_number . '-' . uniqid();
+        // Atau dengan timestamp lebih detail: $order->order_number . '-' . now()->format('YmdHis');
+
+        // 1. Transaction Details (WAJIB)
         $transactionDetails = [
-            'order_id'     => $order->order_number, // ID Unik Order
+            'order_id'     => $midtransOrderId, // <-- YANG INI DIUBAH
             'gross_amount' => (int) $order->total_amount,
         ];
 

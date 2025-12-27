@@ -9,7 +9,7 @@ FUNGSI: Footer website
             {{-- Brand & Description --}}
             <div class="col-lg-4 col-md-6">
                 <h5 class="text-white mb-3">
-                    <i class="bi bi-bag-heart-fill me-2"></i>TokoOnline
+                    <i class="bi bi-bag-heart-fill me-2"></i>The Cozy Haven
                 </h5>
                 <p class="text-secondary">
                     Toko online terpercaya dengan berbagai produk berkualitas.
@@ -63,7 +63,7 @@ FUNGSI: Footer website
                 <ul class="list-unstyled text-secondary">
                     <li class="mb-2">
                         <i class="bi bi-geo-alt me-2"></i>
-                        Jl. Contoh No. 123, Bandung
+                        Jl.Cisirung No. 123, Bandung
                     </li>
                     <li class="mb-2">
                         <i class="bi bi-telephone me-2"></i>
@@ -71,7 +71,7 @@ FUNGSI: Footer website
                     </li>
                     <li class="mb-2">
                         <i class="bi bi-envelope me-2"></i>
-                        info@tokoonline.com
+                        info@TheCozyHaven.com
                     </li>
                 </ul>
             </div>

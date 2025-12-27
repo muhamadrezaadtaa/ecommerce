@@ -38,4 +38,20 @@ class PaymentController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+    public function notification(Request $request)
+    {
+        $notification = \Midtrans\Notification();
+
+        $order = Order::where('order_number', $notification->order_id)->firstOrFail();
+
+        if ($notification->transaction_status == 'capture' || $notification->transaction_status == 'settlement') {
+            $order->update(['status' => 'paid']); // atau 'processing'
+        } elseif ($notification->transaction_status == 'pending') {
+            $order->update(['status' => 'pending']);
+        } elseif (in_array($notification->transaction_status, ['deny', 'cancel', 'expire'])) {
+            $order->update(['status' => 'cancelled']);
+        }
+
+        return response('', 200);
+    }
 }

@@ -25,7 +25,7 @@
                     </a>
                 </div>
                 <div class="col-lg-6 d-none d-lg-block text-center">
-                    <img src="{{ asset('images/hero-shopping.svg') }}"
+                    <img src="{{ asset('images/pppp.png') }}"
                          alt="Shopping" class="img-fluid" style="max-height: 400px;">
                 </div>
             </div>
@@ -63,7 +63,7 @@
     <section class="py-5 bg-light">
         <div class="container">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="mb-0">Produk Unggulan</h2>
+                <h2 class=" mb-4"><center>Produk Unggulan </center></h2>
                 <a href="{{ route('catalog.index') }}" class="btn btn-outline-primary">
                     Lihat Semua <i class="bi bi-arrow-right"></i>
                 </a>
