@@ -153,7 +153,6 @@ class CategoryController extends Controller
         return back()->with('success', 'Kategori berhasil dihapus!');
         // CategoryController store/update/delete
         Cache::forget('global_categories');
-        
         // Sebelum (Selalu Query DB)
         // Setiap user refresh halaman, kita konek ke DB, query, ambil data, dan tutup koneksi. Boros!
         $categories = Category::all();

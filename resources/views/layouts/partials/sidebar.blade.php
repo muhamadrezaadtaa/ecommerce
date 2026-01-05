@@ -40,7 +40,7 @@
             <li class="sidebar-item">
               <a class="sidebar-link" href="{{ route('admin.orders.index')}}" aria-expanded="false">
                 <i class="ti ti-receipt"></i>
-                <span class="hide-menu">Pesanan</span>
+                <span class="hide-menu">Pesananku</span>
               </a>
             </li>
           <div class="unlimited-access hide-menu bg-light-secondary position-relative mb-7 mt-5 rounded">
