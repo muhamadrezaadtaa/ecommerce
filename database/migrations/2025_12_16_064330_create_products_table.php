@@ -29,6 +29,9 @@ return new class extends Migration
 
             $table->index(['category_id', 'is_active']);
             $table->index('is_featured');
+            $table->string('slug')->index(); // Cepat dicari
+$table->decimal('price')->index(); // Cepat diurutkan
+$table->foreignId('category_id')->constrained(); // Foreign Key otomatis diindex
         });
     }
 

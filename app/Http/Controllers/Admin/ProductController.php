@@ -102,6 +102,8 @@ class ProductController extends Controller
                 ->withInput()
                 ->with('error', 'Gagal menyimpan produk: ' . $e->getMessage());
         }
+        // Hemat Memori
+        $products = Product::select('id', 'name', 'price', 'slug', 'image')->get();
     }
 
     /**
@@ -165,6 +167,8 @@ class ProductController extends Controller
             DB::rollBack();
             return back()->withInput()->with('error', 'Gagal update: ' . $e->getMessage());
         }
+        // Hemat Memori
+        $products = Product::select('id', 'name', 'price', 'slug', 'image')->get();
     }
 
     /**
@@ -187,6 +191,8 @@ class ProductController extends Controller
         } catch (\Exception $e) {
             return back()->with('error', 'Gagal menghapus: ' . $e->getMessage());
         }
+        // Hemat Memori
+        $products = Product::select('id', 'name', 'price', 'slug', 'image')->get();
     }
 
     // --- Helper Methods ---

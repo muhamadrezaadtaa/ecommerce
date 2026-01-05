@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -86,10 +87,12 @@ class User extends Authenticatable
 {
     // Prioritas 1: Avatar yang di-upload (file fisik ada di server)
     // Kita harus cek Storage::exists() agar tidak broken image jika file-nya terhapus manual.
-    if ($this->avatar && Storage::disk('public')->exists($this->avatar)) {
+    // app/Models/User.php baris 89 (kira-kira)
+
+    if ($this->avatar && \Storage::disk('public')->exists($this->avatar)) { 
         return asset('storage/' . $this->avatar);
     }
-
+    
     // Prioritas 2: Avatar dari Google (URL eksternal dimulai dengan http)
     // Biasanya ini terjadi saat user login via Socialite (Google Sign-In).
     if (str_starts_with($this->avatar ?? '', 'http')) {

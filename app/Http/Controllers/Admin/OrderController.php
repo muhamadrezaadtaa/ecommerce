@@ -1,27 +1,26 @@
 <?php
-// app/Http/Controllers/Admin/OrderController.php
 
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
     /**
      * Menampilkan daftar semua pesanan untuk admin.
-     * Dilengkapi filter by status.
      */
     public function index(Request $request)
     {
         $orders = Order::query()
-            ->with('user') // N+1 prevention: Load data user pemilik order
-            // Fitur Filter Status (?status=pending)
+            ->with('user')
             ->when($request->status, function($q, $status) {
                 $q->where('status', $status);
             })
-            ->latest() // Urutkan terbaru
+            ->latest()
             ->paginate(20);
 
         return view('admin.orders.index', compact('orders'));
@@ -32,45 +31,67 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        // Load item produk dan data user
         $order->load(['items.product', 'user']);
         return view('admin.orders.show', compact('order'));
     }
 
     /**
-     * Update status pesanan (misal: kirim barang)
-     * Handle otomatis pengembalian stok jika status diubah jadi Cancelled.
+     * Update status pesanan dengan Restock Otomatis.
      */
     public function updateStatus(Request $request, Order $order)
     {
-        // Validasi status yang dikirim form
+        // 1. Validasi Input
         $request->validate([
-            'status' => 'required|in:processing,shipped,delivered,cancelled'
+            'status' => 'required|in:pending,processing,shipped,completed,cancelled'
         ]);
 
         $oldStatus = $order->status;
-        $newStatus = $request->status === 'completed' ? 'delivered' : $request->status;
+        $newStatus = $request->status;
 
-        // ============================================================
-        // LOGIKA RESTOCK (PENTING!)
-        // ============================================================
-        // Jika admin membatalkan pesanan, stok barang harus dikembalikan ke gudang.
-        // Syarat:
-        // 1. Status baru adalah 'cancelled'
-        // 2. Status lama BUKAN 'cancelled' (agar tidak restock 2x kalau tombol ditekan berkali-kali)
-        // ============================================================
-        if ($newStatus === 'cancelled' && $oldStatus !== 'cancelled') {
-            foreach ($order->items as $item) {
-                // increment() adalah operasi atomik (thread-safe) di level database.
-                // SQL-nya kurang lebih: UPDATE products SET stock = stock + X WHERE id = Y
-                // Ini aman dari Race Condition jika ada transaksi bersamaan.
-                $item->product->increment('stock', $item->quantity);
-            }
+        // Jika status tidak berubah, langsung kembali
+        if ($oldStatus === $newStatus) {
+            return back()->with('info', "Status sudah bernilai " . ucfirst($newStatus));
         }
 
-        // Update status di database
-        $order->update(['status' => $newStatus]);
+        try {
+            DB::beginTransaction();
 
-        return back()->with('success', "Status pesanan diperbarui menjadi $newStatus");
+            // 2. Logika RESTOCK: Jika dibatalkan (tambah stok)
+            if ($newStatus === 'cancelled' && $oldStatus !== 'cancelled') {
+                foreach ($order->items as $item) {
+                    if ($item->product) {
+                        $item->product->increment('stock', $item->quantity);
+                    }
+                }
+            }
+
+            // 3. Logika RE-ORDER: Jika dari 'cancelled' ke status aktif (kurangi stok)
+            if ($oldStatus === 'cancelled' && $newStatus !== 'cancelled') {
+                foreach ($order->items as $item) {
+                    if ($item->product) {
+                        // Opsional: Cek apakah stok cukup sebelum dikurangi kembali
+                        if ($item->product->stock < $item->quantity) {
+                            throw new \Exception("Gagal mengubah status. Stok produk '{$item->product->name}' tidak mencukupi.");
+                        }
+                        $item->product->decrement('stock', $item->quantity);
+                    }
+                }
+            }
+
+            // 4. Update Database Menggunakan Update atau Force Fill
+            // Menggunakan fill() dan save() sering lebih aman untuk debugging
+            $order->status = $newStatus;
+            $order->save();
+
+            DB::commit();
+            
+            return back()->with('success', "Status pesanan #{$order->order_number} berhasil diperbarui ke " . ucfirst($newStatus));
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Gagal update status Order ID {$order->id}: " . $e->getMessage());
+            
+            return back()->with('error', $e->getMessage());
+        }
     }
 }

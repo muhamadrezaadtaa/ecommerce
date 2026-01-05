@@ -141,3 +141,6 @@ Route::post('/midtrans/notification', [PaymentController::class, 'notification']
 
 Route::post('midtrans/notification', [MidtransNotificationController::class, 'handle'])
     ->name('midtrans.notification');
+
+Route::patch('/admin/orders/update-status', [OrderController::class, 'updateStatus'])
+    ->name('admin.orders.update-status');

@@ -25,9 +25,7 @@ class DashboardController extends Controller
             'total_orders' => Order::count(), // SQL: SELECT COUNT(*) FROM orders
 
             // Pending Orders: Yang perlu tindakan segera admin
-            'pending_orders' => Order::where('status', 'pending')
-                                     ->where('payment_status', 'paid') // Sudah bayar tapi belum diproses
-                                     ->count(),
+            'pending_orders' => Order::where('status', 'pending')->count(),
 
             'total_products' => Product::count(),
 

@@ -1,11 +1,5 @@
-{{-- ================================================
-FILE: resources/views/layouts/app.blade.php
-FUNGSI: Master layout untuk halaman customer/publik
-================================================ --}}
-
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -30,33 +24,35 @@ FUNGSI: Master layout untuk halaman customer/publik
     {{-- Stack untuk CSS tambahan per halaman --}}
     @stack('styles')
 </head>
-
 <body>
     {{-- ============================================
-    NAVBAR
-    ============================================ --}}
+         NAVBAR
+         ============================================ --}}
     @include('partials.navbar')
 
     {{-- ============================================
-    FLASH MESSAGES
-    ============================================ --}}
+         FLASH MESSAGES
+         ============================================ --}}
     <div class="container mt-3">
         @include('partials.flash-messages')
     </div>
 
     {{-- ============================================
-    MAIN CONTENT
-    ============================================ --}}
+         MAIN CONTENT
+         ============================================ --}}
     <main class="min-vh-100">
         @yield('content')
     </main>
 
     {{-- ============================================
-    FOOTER
-    ============================================ --}}
+         FOOTER
+         ============================================ --}}
     @include('partials.footer')
 
-    <script>
+    {{-- Stack untuk JS tambahan per halaman --}}
+    @stack('scripts')
+</body>
+<script>
   /**
    * Fungsi AJAX untuk Toggle Wishlist
    * Menggunakan Fetch API (Modern JS) daripada jQuery.
@@ -124,9 +120,4 @@ FUNGSI: Master layout untuk halaman customer/publik
     }
   }
 </script>
-
-    {{-- Stack untuk JS tambahan per halaman --}}
-    @stack('scripts')
-</body>
-
 </html>
