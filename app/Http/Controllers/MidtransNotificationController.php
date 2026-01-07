@@ -238,17 +238,12 @@ class MidtransNotificationController extends Controller
 
         // TODO: Logic tambahan untuk refund
     }
-    // app/Http/Controllers/MidtransNotificationController.php
-
-
     private function setSuccess(Order $order)
-    {
-        $order->update([
-        'status' => 'paid', // contoh field status
-        'paid_at' => now(),
-        ]);
+{
+    $order->update([]);
 
-        // Fire & Forget
-        event(new OrderPaidEvent($order));
-    }
+    // Fire & Forget
+    event(new OrderPaidEvent($order));
 }
+}
+// app/Http/Controllers/MidtransNotificationController.php

@@ -137,7 +137,6 @@ Route::get('/orders/{order}/success', [OrderController::class, 'success'])->name
 Route::get('/orders/{order}/pending', [OrderController::class, 'pending'])->name('orders.pending');
 
 // routes/web.php
-Route::post('/midtrans/notification', [PaymentController::class, 'notification'])->name('midtrans.notification');
 
 Route::post('midtrans/notification', [MidtransNotificationController::class, 'handle'])
     ->name('midtrans.notification');

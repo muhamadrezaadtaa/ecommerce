@@ -13,9 +13,11 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
+            // Baris pertama (sudah benar)
             $table->foreignId('category_id')
                   ->constrained()
                   ->cascadeOnDelete();
+            
             $table->string('name');
             $table->string('slug')->unique(); 
             $table->text('description')->nullable();
@@ -27,11 +29,11 @@ return new class extends Migration
             $table->boolean('is_featured')->default(false);
             $table->timestamps();
 
+            // Indexing
             $table->index(['category_id', 'is_active']);
             $table->index('is_featured');
-            $table->string('slug')->index(); // Cepat dicari
-$table->decimal('price')->index(); // Cepat diurutkan
-$table->foreignId('category_id')->constrained(); // Foreign Key otomatis diindex
+            
+            // BARIS DUPLIKAT TADI SUDAH SAYA HAPUS DARI SINI
         });
     }
 

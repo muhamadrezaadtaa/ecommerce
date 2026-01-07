@@ -78,4 +78,4 @@
         {{ $orders->links() }}
     </div>
 </div>
-@endsection
+@endsection 

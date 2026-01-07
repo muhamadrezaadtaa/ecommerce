@@ -8,11 +8,14 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('orders', function (Blueprint $table) {
-            $table->enum('payment_status', ['pending', 'paid', 'failed', 'refunded'])
-                  ->default('pending')
-                  ->after('status'); // opsional, letakkan setelah kolom status
-        });
+        // Cek dulu apakah kolom sudah ada untuk menghindari error "Duplicate Column"
+        if (!Schema::hasColumn('orders', 'payment_status')) {
+            Schema::table('orders', function (Blueprint $table) {
+                $table->enum('payment_status', ['pending', 'paid', 'failed', 'expired', 'refunded'])
+                      ->default('pending')
+                      ->after('status'); 
+            });
+        }
     }
 
     public function down(): void

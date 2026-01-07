@@ -4,10 +4,10 @@
 namespace App\Services;
 
 use App\Models\Order;
+use Exception;
 use Midtrans\Config;
 use Midtrans\Snap;
 use Midtrans\Transaction;
-use Exception;
 
 class MidtransService
 {
@@ -43,24 +43,18 @@ class MidtransService
         // 1. Transaction Details (WAJIB)
         // 'gross_amount' HARUS integer (Rupiah tidak ada sen di Midtrans).
         // Jangan kirim float/string pecahan!
-        // Buat Midtrans Order ID yang unik (tapi tetap traceable ke order kamu)
-        $midtransOrderId = $order->order_number . '-' . time(); 
-        // Atau lebih random: $order->order_number . '-' . uniqid();
-        // Atau dengan timestamp lebih detail: $order->order_number . '-' . now()->format('YmdHis');
-
-        // 1. Transaction Details (WAJIB)
         $transactionDetails = [
-            'order_id'     => $midtransOrderId, // <-- YANG INI DIUBAH
+            'order_id'     => $order->order_number, // ID Unik Order
             'gross_amount' => (int) $order->total_amount,
         ];
 
         // 2. Customer Details (Opsional tapi Recommended)
         // Agar data user otomatis terisi di sistem Midtrans (email struk, dll)
         $customerDetails = [
-            'first_name' => $order->user->name,
-            'email'      => $order->user->email,
-            'phone'      => $order->shipping_phone ?? $order->user->phone ?? '',
-            'billing_address' => [
+            'first_name'       => $order->user->name,
+            'email'            => $order->user->email,
+            'phone'            => $order->shipping_phone ?? $order->user->phone ?? '',
+            'billing_address'  => [
                 'first_name' => $order->shipping_name,
                 'phone'      => $order->shipping_phone,
                 'address'    => $order->shipping_address,

@@ -11,32 +11,32 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')
-                  ->constrained()
-                  ->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('order_number', 50)->unique();
             $table->decimal('total_amount', 15, 2);
             $table->decimal('shipping_cost', 12, 2)->default(0);
+
+            // Status utama pesanan
             $table->enum('status', [
-                'pending',      // Nunggu Pembayaran
-                'processing',   // Pembayaran Diterima, Sedang Diproses
-                'shipped',      // Dikirim
-                'delivered',    // Diterima
-                'cancelled'     // Batal
+                'pending', 'processing', 'shipped', 'delivered', 'cancelled',
             ])->default('pending');
+
+            // Status pembayaran (yang tadi dicari OrderService)
+            $table->string('payment_status')->default('unpaid', 'paid');
+
+            // Data pengiriman (Cukup tulis satu kali saja)
             $table->string('shipping_name');
             $table->string('shipping_phone', 20);
             $table->text('shipping_address');
+
             $table->string('payment_method')->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();
+
+            // Indexing
             $table->index('order_number');
-            $table->index('status');
-            $table->index('created_at');
-            $table->string('midtrans_order_id')->nullable()->unique();
         });
     }
-
     public function down(): void
     {
         Schema::dropIfExists('orders');
