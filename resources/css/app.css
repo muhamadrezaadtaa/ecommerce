@@ -16,7 +16,7 @@
 
 :root {
   /* Warna Brand Toko */
-  --primary-color: #4f46e5; /* Indigo */
+  --primary-color: #46464e; /* Indigo */
   --secondary-color: #10b981; /* Emerald */
   --accent-color: #f59e0b; /* Amber */
 
@@ -33,7 +33,7 @@
 }
 
 .btn-primary:hover {
-  background-color: #4338ca;
+  background-color: #3f3e41;
   border-color: #4338ca;
 }
 

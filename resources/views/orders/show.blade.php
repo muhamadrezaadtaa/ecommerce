@@ -30,13 +30,12 @@
     .line-tracker { position: absolute; top: 22px; left: 10%; right: 10%; height: 3px; background: #e9ecef; z-index: 1; }
     .line-fill { height: 100%; background: var(--biru-steel); transition: 0.8s ease; }
     
-    /* Logic Progress Bar */
+    /* Logic Progress Bar Berdasarkan payment_status dan status */
     @php
         $progress = 0;
-        if($order->status == 'pending') $progress = 0;
-        elseif($order->status == 'processing') $progress = 33;
-        elseif($order->status == 'shipped') $progress = 66;
-        elseif($order->status == 'delivered') $progress = 100;
+        if($order->payment_status === 'paid' || $order->status === 'processing') $progress = 33;
+        if($order->status === 'shipped') $progress = 66;
+        if($order->status === 'delivered') $progress = 100;
     @endphp
     .line-fill { width: {{ $progress }}%; }
 
@@ -87,12 +86,12 @@
 
                 {{-- Status Tracker --}}
                 <div class="card-body p-4 p-md-5 border-bottom bg-white">
-                    @if($order->status == 'cancelled')
+                    @if($order->status == 'cancelled' || $order->payment_status == 'failed')
                         <div class="alert alert-danger border-0 rounded-4 d-flex align-items-center mb-0">
                             <i class="bi bi-x-circle-fill fs-1 me-3"></i>
                             <div>
-                                <h6 class="fw-bold mb-1">Pesanan Dibatalkan</h6>
-                                <p class="mb-0 small">Maaf, pesanan ini tidak dapat dilanjutkan karena telah dibatalkan.</p>
+                                <h6 class="fw-bold mb-1">Pesanan Dibatalkan / Gagal</h6>
+                                <p class="mb-0 small">Maaf, pesanan ini tidak dapat dilanjutkan.</p>
                             </div>
                         </div>
                     @else
@@ -103,7 +102,7 @@
                                 <div class="status-icon"><i class="bi bi-wallet2"></i></div>
                                 <div class="status-text">Menunggu</div>
                             </div>
-                            <div class="status-step {{ in_array($order->status, ['processing', 'shipped', 'delivered']) ? 'active' : '' }}">
+                            <div class="status-step {{ ($order->payment_status == 'paid' || in_array($order->status, ['processing', 'shipped', 'delivered'])) ? 'active' : '' }}">
                                 <div class="status-icon"><i class="bi bi-box-seam"></i></div>
                                 <div class="status-text">Diproses</div>
                             </div>
@@ -136,7 +135,6 @@
                                 <tr class="border-bottom">
                                     <td class="py-3 ps-3">
                                         <div class="d-flex align-items-center">
-                                            {{-- Penanganan Gambar --}}
                                             @php 
                                                 $imagePath = $item->product && $item->product->image ? asset('storage/' . $item->product->image) : 'https://placehold.co/100x100?text=Gadget';
                                             @endphp
@@ -147,12 +145,8 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="text-center text-dark fw-medium">
-                                        {{ $item->quantity }}x
-                                    </td>
-                                    <td class="text-end pe-3 fw-bold text-dark">
-                                        Rp {{ number_format($item->subtotal, 0, ',', '.') }}
-                                    </td>
+                                    <td class="text-center text-dark fw-medium">{{ $item->quantity }}x</td>
+                                    <td class="text-end pe-3 fw-bold text-dark">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</td>
                                 </tr>
                                 @endforeach
                             </tbody>
@@ -195,21 +189,27 @@
                         <div class="col-md-6 text-md-end">
                             <h6 class="fw-bold mb-3 text-dark"><i class="bi bi-credit-card me-2 text-biru-steel"></i>Info Pembayaran</h6>
                             <p class="mb-2 text-muted small">Metode: Online Payment (Midtrans)</p>
-                            @if($order->status == 'pending')
-                                <span class="badge bg-warning text-dark border px-3 py-2 fw-bold">
-                                    <i class="bi bi-clock-history me-1"></i> Menunggu Pembayaran
-                                </span>
-                            @else
+                            
+                            {{-- LOGIKA LABEL STATUS PEMBAYARAN --}}
+                            @if($order->payment_status === 'paid')
                                 <span class="badge bg-white text-success border px-3 py-2 fw-bold shadow-sm">
                                     <i class="bi bi-shield-check me-1"></i> Terverifikasi / Lunas
+                                </span>
+                            @elseif($order->payment_status === 'failed' || $order->status === 'cancelled')
+                                <span class="badge bg-danger text-white border px-3 py-2 fw-bold">
+                                    <i class="bi bi-x-circle me-1"></i> Pembayaran Gagal/Batal
+                                </span>
+                            @else
+                                <span class="badge bg-warning text-dark border px-3 py-2 fw-bold">
+                                    <i class="bi bi-clock-history me-1"></i> Menunggu Pembayaran
                                 </span>
                             @endif
                         </div>
                     </div>
                 </div>
 
-                {{-- Pay Button --}}
-                @if(isset($snapToken) && $order->status === 'pending')
+                {{-- Pay Button - Hanya muncul jika belum dibayar dan belum batal --}}
+                @if(isset($snapToken) && $order->payment_status !== 'paid' && $order->status === 'pending')
                 <div class="card-footer bg-white py-5 border-top-0 text-center">
                     <div class="mb-4">
                         <h5 class="fw-bold">Yuk, Selesaikan Pembayaran!</h5>
@@ -226,7 +226,7 @@
 </div>
 
 {{-- Midtrans Scripts --}}
-@if(isset($snapToken))
+@if(isset($snapToken) && $order->payment_status !== 'paid')
     @push('scripts')
         <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
         <script type="text/javascript">
@@ -237,8 +237,14 @@
                     payButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Memuat...';
 
                     window.snap.pay('{{ $snapToken }}', {
-                        onSuccess: function(result) { window.location.href = '{{ route("orders.index") }}?status=success'; },
-                        onPending: function(result) { window.location.href = '{{ route("orders.show", $order) }}'; },
+                        onSuccess: function(result) { 
+                            // Redirect ke index dengan notifikasi sukses
+                            window.location.href = '{{ route("orders.index") }}?payment=success'; 
+                        },
+                        onPending: function(result) { 
+                            // Tetap di halaman ini untuk instruksi transfer
+                            window.location.reload(); 
+                        },
                         onError: function(result) { 
                             alert('Pembayaran gagal, silakan coba lagi.'); 
                             payButton.disabled = false;

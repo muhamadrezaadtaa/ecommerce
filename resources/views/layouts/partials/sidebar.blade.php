@@ -40,9 +40,16 @@
             <li class="sidebar-item">
               <a class="sidebar-link" href="{{ route('admin.orders.index')}}" aria-expanded="false">
                 <i class="ti ti-receipt"></i>
-                <span class="hide-menu">Pesananku</span>
+                <span class="hide-menu">Pesanan</span>
               </a>
             </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="{{ route('admin.reports.sales')}}" aria-expanded="false">
+                <i class="ti ti-chart-bar"></i>
+                <span class="hide-menu">Laporan Penjualan</span>
+              </a>
+            </li>
+            
           <div class="unlimited-access hide-menu bg-light-secondary position-relative mb-7 mt-5 rounded">
             <div class="d-flex">
               <div class="unlimited-access-title me-3">
